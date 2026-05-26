@@ -1,0 +1,6 @@
+{
+    "winning_model": "Classical ML (SVM)",
+    "accuracy": 0.9824561403508771,
+    "f1_score": 0.9861111111111112,
+    "artifact_file": "best_model.pkl"
+}
