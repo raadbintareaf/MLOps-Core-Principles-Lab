@@ -1,0 +1,5 @@
+{
+    "model": "Classical ML (Logistic Regression)",
+    "accuracy": 0.9737,
+    "f1_score": 0.979
+}
