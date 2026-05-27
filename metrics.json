@@ -10,8 +10,8 @@
         "type": "Deep Learning",
         "layers": 4,
         "preprocessing": "StandardScaler",
-        "accuracy": 0.9385964912280702,
-        "f1_score": 0.9496402877697842
+        "accuracy": 0.9649122807017544,
+        "f1_score": 0.971830985915493
     },
     "winning_model": "Model A - LogisticRegression",
     "winning_metrics": {

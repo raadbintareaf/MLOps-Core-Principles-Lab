@@ -1,28 +1,19 @@
 import json
-import random
 from pathlib import Path
 
 import joblib
-import numpy as np
-import tensorflow as tf
 from sklearn.datasets import load_breast_cancer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
 METRICS_PATH = Path("metrics.json")
-CLASSICAL_MODEL_PATH = Path("best_model.pkl")
-DEEP_LEARNING_MODEL_PATH = Path("best_model.h5")
+MODEL_PATH = Path("best_model.pkl")
 RANDOM_STATE = 42
-
-
-def set_random_seeds():
-    random.seed(RANDOM_STATE)
-    np.random.seed(RANDOM_STATE)
-    tf.random.set_seed(RANDOM_STATE)
 
 
 def load_data():
@@ -48,22 +39,22 @@ def build_classical_model():
     )
 
 
-def build_deep_learning_model(input_shape):
-    model = tf.keras.Sequential(
-        [
-            tf.keras.layers.Input(shape=(input_shape,)),
-            tf.keras.layers.Dense(64, activation="relu"),
-            tf.keras.layers.Dense(32, activation="relu"),
-            tf.keras.layers.Dense(16, activation="relu"),
-            tf.keras.layers.Dense(1, activation="sigmoid"),
+def build_deep_learning_model():
+    return Pipeline(
+        steps=[
+            ("scaler", StandardScaler()),
+            (
+                "model",
+                MLPClassifier(
+                    hidden_layer_sizes=(64, 32, 16),
+                    activation="relu",
+                    solver="adam",
+                    max_iter=1000,
+                    random_state=RANDOM_STATE,
+                ),
+            ),
         ]
     )
-    model.compile(
-        optimizer="adam",
-        loss="binary_crossentropy",
-        metrics=["accuracy"],
-    )
-    return model
 
 
 def evaluate_predictions(y_test, predictions):
@@ -73,38 +64,16 @@ def evaluate_predictions(y_test, predictions):
     }
 
 
-def train_and_evaluate_classical_model(X_train, X_test, y_train, y_test):
-    model = build_classical_model()
+def train_and_evaluate_model(model, X_train, X_test, y_train, y_test):
     model.fit(X_train, y_train)
     predictions = model.predict(X_test)
     metrics = evaluate_predictions(y_test, predictions)
     return model, metrics
 
 
-def train_and_evaluate_deep_learning_model(X_train, X_test, y_train, y_test):
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
-
-    model = build_deep_learning_model(X_train_scaled.shape[1])
-    model.fit(
-        X_train_scaled,
-        y_train,
-        epochs=100,
-        batch_size=16,
-        verbose=0,
-    )
-
-    probabilities = model.predict(X_test_scaled, verbose=0).ravel()
-    predictions = (probabilities >= 0.5).astype(int)
-    metrics = evaluate_predictions(y_test, predictions)
-    return model, metrics
-
-
 def remove_existing_artifacts():
-    for artifact_path in (CLASSICAL_MODEL_PATH, DEEP_LEARNING_MODEL_PATH):
-        if artifact_path.exists():
-            artifact_path.unlink()
+    if MODEL_PATH.exists():
+        MODEL_PATH.unlink()
 
 
 def save_metrics(metrics):
@@ -113,16 +82,17 @@ def save_metrics(metrics):
 
 
 def main():
-    set_random_seeds()
     X_train, X_test, y_train, y_test = load_data()
 
-    model_a, model_a_metrics = train_and_evaluate_classical_model(
+    model_a, model_a_metrics = train_and_evaluate_model(
+        build_classical_model(),
         X_train,
         X_test,
         y_train,
         y_test,
     )
-    model_b, model_b_metrics = train_and_evaluate_deep_learning_model(
+    model_b, model_b_metrics = train_and_evaluate_model(
+        build_deep_learning_model(),
         X_train,
         X_test,
         y_train,
@@ -134,13 +104,13 @@ def main():
     if model_a_metrics["accuracy"] >= model_b_metrics["accuracy"]:
         winning_model = "Model A - LogisticRegression"
         winning_metrics = model_a_metrics
-        winning_artifact = str(CLASSICAL_MODEL_PATH)
-        joblib.dump(model_a, CLASSICAL_MODEL_PATH)
+        winning_estimator = model_a
     else:
         winning_model = "Model B - Feedforward Neural Network"
         winning_metrics = model_b_metrics
-        winning_artifact = str(DEEP_LEARNING_MODEL_PATH)
-        model_b.save(DEEP_LEARNING_MODEL_PATH)
+        winning_estimator = model_b
+
+    joblib.dump(winning_estimator, MODEL_PATH)
 
     metrics = {
         "model_a": {
@@ -159,7 +129,7 @@ def main():
         "winning_metrics": winning_metrics,
         "winning_accuracy": winning_metrics["accuracy"],
         "winning_f1_score": winning_metrics["f1_score"],
-        "winning_artifact": winning_artifact,
+        "winning_artifact": str(MODEL_PATH),
     }
     save_metrics(metrics)
 
@@ -169,7 +139,7 @@ def main():
     print(f"Model B F1-score: {model_b_metrics['f1_score']:.4f}")
     print(f"Winning model: {winning_model}")
     print(f"Saved metrics to {METRICS_PATH}")
-    print(f"Saved winning model artifact to {winning_artifact}")
+    print(f"Saved winning model artifact to {MODEL_PATH}")
 
 
 if __name__ == "__main__":
