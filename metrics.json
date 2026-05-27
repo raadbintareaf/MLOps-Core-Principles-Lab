@@ -1,0 +1,24 @@
+{
+    "model_a": {
+        "name": "LogisticRegression",
+        "type": "Classical ML",
+        "accuracy": 0.9824561403508771,
+        "f1_score": 0.9861111111111112
+    },
+    "model_b": {
+        "name": "Feedforward Neural Network",
+        "type": "Deep Learning",
+        "layers": 4,
+        "preprocessing": "StandardScaler",
+        "accuracy": 0.9385964912280702,
+        "f1_score": 0.9496402877697842
+    },
+    "winning_model": "Model A - LogisticRegression",
+    "winning_metrics": {
+        "accuracy": 0.9824561403508771,
+        "f1_score": 0.9861111111111112
+    },
+    "winning_accuracy": 0.9824561403508771,
+    "winning_f1_score": 0.9861111111111112,
+    "winning_artifact": "best_model.pkl"
+}
