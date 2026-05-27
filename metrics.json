@@ -1,0 +1,23 @@
+{
+    "model_a": {
+        "model_name": "Logistic Regression",
+        "model_type": "Classical ML",
+        "accuracy": 0.9737,
+        "f1_score": 0.979
+    },
+    "model_b": {
+        "model_name": "Feedforward Neural Network",
+        "model_type": "Deep Learning",
+        "accuracy": 0.9825,
+        "f1_score": 0.9859
+    },
+    "winning_model": {
+        "model_name": "Feedforward Neural Network",
+        "model_type": "Deep Learning",
+        "accuracy": 0.9825,
+        "f1_score": 0.9859,
+        "artifact": "best_model.h5"
+    },
+    "accuracy": 0.9825,
+    "f1_score": 0.9859
+}
