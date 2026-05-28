@@ -1,0 +1,35 @@
+{
+  "winning_model": {
+    "model_name": "Svc_model",
+    "accuracy": 0.982,
+    "f1_score": 0.986,
+    "artifact_path": "Svc_model.pkl"
+  },
+  "Rank": [
+    {
+      "Model Name": "Svc_model",
+      "Accuracy": 0.98246,
+      "F1 Score": 0.98611
+    },
+    {
+      "Model Name": "Logistic_regression_model",
+      "Accuracy": 0.97368,
+      "F1 Score": 0.97902
+    },
+    {
+      "Model Name": "random_forest_model",
+      "Accuracy": 0.95614,
+      "F1 Score": 0.96503
+    },
+    {
+      "Model Name": "Xgboost_model",
+      "Accuracy": 0.95614,
+      "F1 Score": 0.96503
+    },
+    {
+      "Model Name": "Dl_model",
+      "Accuracy": 0.95614,
+      "F1 Score": 0.96454
+    }
+  ]
+}
